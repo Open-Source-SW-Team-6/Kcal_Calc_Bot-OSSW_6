@@ -24,14 +24,24 @@ for page in range(1,3):
         foodlist += menu[i] + "\n"
 
     print(foodlist)
+#   for n in kal:
 
     for n in kal:
         i = kal.index(n)
-        kal[i]= n.get_text()
-
+        kal[i]=n.get_text()
+        
     foodlist2=""
-
-    for i in range(0,len(kal)):
-        foodlist2 += str(i) + kal[i] + "\n" 
-
+    #음식이름정보
+    for i in range(28,96,5):
+        foodlist2 += kal[i] + "\n" 
     print(foodlist2)
+    foodlist2=""
+    #칼로리정보
+    for i in range(29,97,5):
+        foodlist2 += kal[i] + "\n" 
+    print(foodlist2)
+    foodlist2=""
+    #단위정보
+    for i in range(30,98,5):
+        foodlist2 += kal[i] + "\n" 
+    print(foodlist2)    
