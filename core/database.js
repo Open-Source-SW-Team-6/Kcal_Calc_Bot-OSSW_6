@@ -1,21 +1,37 @@
 var mysql = require('mysql');
-var msg = require('./send');
-var main = require('./app');
+var syncMySQL = require('sync-mysql');
 
-var connection = mysql.createConnection({
+var connData = {
     host: 'stdbid.cjmpatqmujx2.us-east-2.rds.amazonaws.com',
     port: 3306,
     user: 'sjuackr18',
     password: '',
     database: 'ossw_6_kcal'
-});
+}
+
+var connection = mysql.createConnection(connData);
+var syncConnection = null;
 
 exports.DBConnect = function() {
     connection.connect();
+    syncConnection = new syncMySQL(connData);
+    console.log('데이터베이스에 연결됨');
 }
 
 exports.DBdisConnect = function() {
     connection.end();
+    syncConnection.end();
+    console.log('데이터베이스 해제됨');
+}
+
+exports.checkUser = function (uKey){
+
+    var sql = "SELECT EXISTS (SELECT * FROM USER WHERE userKey='"+uKey+"') AS SUCCESS";
+
+    const result = syncConnection.query(sql);
+    console.log(result);
+    
+    return result[0].SUCCESS == 0 ? false : true;
 }
 
 //사용자 고유 키, 사용자 이름, 나이, 성별, 신장, 체중, 활동지수, 표준체중, 일일권장칼로리, 하루마무리시간, 등록날짜
@@ -45,25 +61,4 @@ exports.addUserInfo = function(uKey, uName, uAge, uGen, uHeight, uWeight, uActix
     }
 
     connection.query(sql, post, callback);
-}
-//var res;
-exports.checkUser = function(uKey) {
-    var sql = "SELECT EXISTS (SELECT * FROM USER WHERE userKey='"+uKey+"') AS SUCCESS";
-    function callback(err, rows, fields) {
-        if(err) {
-            throw err;
-        }
-        for(var i=0; i<rows.length; i++) {
-            msg.sendMsg("sdafas", res);
-            var tmp = (rows[i].SUCCESS) + 0;
-            console.log(tmp+" value...");
-            if(tmp == 0)
-                main.isUserExists = true;
-            else {
-                console.log("Current user already exist on database.");
-                main.isUserExists = false;
-            }
-        }
-    }
-    connection.query(sql, callback);
 }

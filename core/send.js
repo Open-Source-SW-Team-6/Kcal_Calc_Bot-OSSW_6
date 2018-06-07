@@ -1,15 +1,14 @@
-var bodyParser = require('body-parser');
-var express = require('express');
-var app = express();
+exports.sendMsg = function(mMessage, type) {
+    var Send = {};
 
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json());
-
-exports.sendMsg = function(mMessage, res) {
-    var Send = {
-        'message': {
-            'text': mMessage
-        }
-    };
-    res.json(Send);
+    if (type == 0) {
+        return Send = {
+            'message': {
+                'text': mMessage
+            },
+            "keyboard": {
+                "type": "text"
+            }
+        };
+    }
 }
