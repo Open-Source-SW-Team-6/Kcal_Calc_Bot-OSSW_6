@@ -4,14 +4,18 @@ var bodyParser = require('body-parser');
 var DBMS = require('./database');
 var app = express();
 
+var isUserExists = false;
+var mUserKey;
+
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 app.get('/keyboard', function(req, res) {
     var data = {
-        'type': 'text'
+        'type': 'buttons',
+            'buttons': ['등록'],
     };
-
+    //DBMS.checkUser(mUserKey);
     res.json(data);
 });
 
@@ -20,12 +24,20 @@ app.post('/message', function(req, res) {
     console.log('전달받은 메시지: '+msg);
     var Send={};
 
-    console.log(req.body.user_key);
-
-    DBMS.addUserInfoCK(req.body.user_key, "Sain", 24, 1, 168.3, 59.7, "1.4", 60.0, 2123.4, "21", 0);
+    //DBMS.addUserInfoCK(req.body.user_key, "Sain", 24, 1, 168.3, 59.7, "1.4", 60.0, 2123.4, "21", 0, res);
     //DBMS.DBdisConnect();
 
     switch(msg) {
+        case '등록':
+            Send={
+                'message': {
+                    'text': '등록을 진행합니다!'
+                }
+            }
+            mUserKey = req.body.user_key;
+            console.log(mUserKey + "");
+            DBMS.checkUser(mUserKey);
+            break;
         case '학생회관':
             Send={
                 'message': {
@@ -66,7 +78,7 @@ app.post('/message', function(req, res) {
     res.json(Send);
 });
 
-http.createServer(app).listen(3030, function() {
+http.createServer(app).listen(3000, function() {
     console.log('서버가 실행 중입니다.');
     DBMS.DBConnect();
 });
