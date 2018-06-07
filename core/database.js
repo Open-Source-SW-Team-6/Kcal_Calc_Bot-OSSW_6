@@ -3,7 +3,7 @@ var connection = mysql.createConnection({
     host: 'stdbid.cjmpatqmujx2.us-east-2.rds.amazonaws.com',
     port: 3306,
     user: 'sjuackr18',
-    password: 'sejonguniv2018',
+    password: '여기에 비밀번호 입력',
     database: 'ossw_6_kcal'
 });
 
