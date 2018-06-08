@@ -296,7 +296,16 @@ app.post('/message', function(req, res) {
     else { //여기에 등록을 제외한 기타 명령 입력
         if(msg.match('음식') == '음식') { //사용자가 먹은 음식을 등록하는 명령
             console.log('먹은 음식을 등록합니다.');
-            
+            var Send = {
+                'message': {
+                    'text': '먼저 식당을 선택해주세요~'
+                },
+                keyboard: {
+                    'type': 'buttons',
+                    'buttons': ['학생회관', '군자관', '우정당', '기타']
+                }
+            }
+            res.json(Send);
         }
         /*
         res.json(sendData.sendMsg('알 수 없는 명령입니다..ㅜㅜ', 0));
