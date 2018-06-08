@@ -296,12 +296,23 @@ app.post('/message', function(req, res) {
     else { //여기에 등록을 제외한 기타 명령 입력
         if(msg.match('음식') == '음식') { //사용자가 먹은 음식을 등록하는 명령
             console.log('먹은 음식을 등록합니다.');
-
+            
         }
         /*
         res.json(sendData.sendMsg('알 수 없는 명령입니다..ㅜㅜ', 0));
 
         //반복문을 이용해 데이터베이스에서 모든 음식 가져와서 배열에 저장
+        var 학생회관_menu = ['', '', '', ''];
+        var 학생회관_kcal = ['', '', '', ''];
+        var 학생회관_amount = ['', '', '', ''];
+        var 학생회관_unit = ['', '', '', ''];
+
+        var 군자관_menu = ['', '', '', ''];
+        var 군자관_kcal = ['', '', '', ''];
+        var 군자관_amount = ['', '', '', ''];
+        var 군자관_unit = ['', '', '', ''];
+
+
         var 학관메뉴 = ['', '', '', ''];
         var Send = {
             'type':'buttons',
