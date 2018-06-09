@@ -34,6 +34,54 @@ exports.checkUser = function (uKey){
     return result[0].SUCCESS == 0 ? false : true;
 }
 
+exports.checkFood = function (message, caf){
+
+    var sql = "SELECT COUNT(*) AS RES FROM FOOD WHERE menu='"+message+"' AND cafeteria='"+caf+"'";
+
+    const result = syncConnection.query(sql);
+    console.log(result);
+    
+    return result[0].RES == 0 ? false : true;
+}
+
+var btnArr = [];
+
+exports.simlFood = function (message, caf){
+    btnArr = [];
+
+    var sql = "SELECT menu FROM FOOD WHERE menu LIKE '%"+message+"%' AND cafeteria='"+caf+"'";
+    var strArr = '다음 키워드가 존재합니다!\n';
+
+    const result = syncConnection.query(sql);
+    console.log(result);
+
+    btnArr[0] = '다시검색';
+
+    for(var i = 0; i < result.length; i++) {
+        strArr += '\n' + result[i].menu;
+        btnArr[i+1] = result[i].menu;
+    }
+    
+    if(strArr == '다음 키워드가 존재합니다!\n')
+        strArr = '키워드가 없습니다...\n다른 걸로 검색해보세요~';
+
+    return strArr;
+}
+
+exports.simlFoodBtn = function() {
+    return btnArr;
+}
+
+exports.selectFood = function (message, caf){
+
+    var sql = "SELECT * FROM FOOD WHERE menu='"+message+"' AND cafeteria='"+caf+"'";
+
+    const result = syncConnection.query(sql);
+    console.log(result);
+    
+    return result;
+}
+
 //사용자 고유 키, 사용자 이름, 나이, 성별, 신장, 체중, 활동지수, 표준체중, 일일권장칼로리, 하루마무리시간, 등록날짜
 exports.addUserInfo = function(uKey, uName, uAge, uGen, uHeight, uWeight, uActix, sWeight, recKcal, doEndTime, regDate) {
     var userNm = uName;

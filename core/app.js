@@ -29,6 +29,27 @@ var userGender = 0;
 var userHeight = 0.0;
 var userWeight = 0.0;
 
+var inFoodReg = false;
+var userKey_Food = false;
+var selectedCafeteria = null;
+var selectedMenu = null;
+var selectedKcal = 0.0;
+var selectedAmount = 0.0;
+var inpAmount = 0.0;
+var selectedUnit = null;
+
+function varsInit_food() { //음식 등록 변수 초기화
+    inFoodReg = false;
+    userKey_Food = false;
+    selectedCafeteria = null;
+    selectedMenu = null;
+    selectedKcal = 0.0;
+    selectedAmount = 0.0;
+    inpAmount = 0.0;
+    selectedUnit = null;
+    console.log('재사용할 수 있도록 음식 등록 변수가 초기화 되었습니다.');
+}
+
 function varsInit() { //변수 초기화
     userKey = null;
     isUserExist = false;
@@ -178,6 +199,19 @@ function UserActIXCheck(message, A, G) { //활동 지수 번호 입력상태 체
     return false;
 }
 
+function AmountCheck(message) { //하루 종료 시간 입력상태 체크
+    var tmp = parseFloat(message);
+    if(tmp+'' == 'NaN') {
+        console.log('잘못된 양 값을 입력했습니다.');
+        return false;
+    }
+    else {
+        inpAmount = tmp;
+        return true;
+    }
+    return false;
+}
+
 function UserEODTCheck(message) { //하루 종료 시간 입력상태 체크
     var tmp = parseInt(message);
     if(tmp+'' == 'NaN') {
@@ -206,12 +240,20 @@ function UserNameCheck(message) { //닉네임 입력상태 체크
     return false;
 }
 
+app.get('/keyboard', function(req, res) {
+    var data = {
+        'type': 'buttons',
+        'buttons': ['식사', '운동', '사용자등록']
+    };
+    res.json(data);
+});
+
 app.post('/message', function(req, res) {
     var msg = req.body.content + '';
     console.log('전달받은 메시지: '+msg);
     //isUserExist = DBMS.checkUser(req.body.user_key);
 
-    if(msg.match('등록') == '등록' && inUserReg == false) {
+    if(msg.match('등록') == '등록' && !inUserReg && !inFoodReg) {
         if(!DBMS.checkUser(req.body.user_key)) {
             res.json(sendData.sendMsg('먼저 본인의 신체정보를 "나이 성별(남: 1 또는 여: 2) 신장 체중" 띄어쓰기 구분하여 순서대로 입력해주세요.\n(예: 24 1 170 72)', 0));
             console.log('유저가 없습니다.');
@@ -292,21 +334,82 @@ app.post('/message', function(req, res) {
     }
     else if(userKey != req.body.user_key && msg.match('등록') == '등록') {
        res.json(sendData.sendMsg('다른 사용자가 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+    } 
+    //여기에 사용자 등록을 제외한 기타 명령 입력
+    else if((msg.match('식사') == '식사' || msg.match('음식') == '음식') && !inFoodReg) { //사용자가 먹은 음식을 등록하는 명령
+        console.log('먹은 음식을 등록합니다.');
+        inFoodReg = true; //음식을 등록 중인 플래그
+        userKey_Food = req.body.user_key;
+        var btn = ['학생회관', '군자관', '우정당', '기타', '취소']
+        res.json(sendData.sendMsg('교내식당 또는 기타 음식을 선택 해 주세요.', 1, btn));
     }
-    else { //여기에 등록을 제외한 기타 명령 입력
-        if(msg.match('음식') == '음식') { //사용자가 먹은 음식을 등록하는 명령
-            console.log('먹은 음식을 등록합니다.');
-            var Send = {
-                'message': {
-                    'text': '먼저 식당을 선택해주세요~'
-                },
-                keyboard: {
-                    'type': 'buttons',
-                    'buttons': ['학생회관', '군자관', '우정당', '기타']
-                }
-            }
-            res.json(Send);
+    else if(userKey_Food == req.body.user_key && inFoodReg) { //다른 사용자 막기
+        if(msg.match('취소') == '취소') { //사용자가 취소한 경우
+            res.json(sendData.sendMsg('음식 등록을 취소했습니다.', 0));
+            console.log('사용자가 음식 등록을 취소함.');
+            varsInit_food(); //변수 초기화
         }
+        else if(msg == '직접입력') {
+            res.json(sendData.sendMsg('직접 입력해주세요~', 0));
+        }
+        else if(selectedCafeteria == null) {
+            if(msg == '학생회관') { //학생회관 버튼을 클릭한 경우
+                //각 버튼에 대해 데이터베이스에서 결과값들을 변수에 저장하고 버튼에 할당
+                selectedCafeteria = msg;
+                var btn = ['직접입력', '소금구이덮밥', '오믈렛', '야채김밥', '카오팟무']
+                res.json(sendData.sendMsg('학생회관을 선택하셨습니다. 아래 메뉴 중 하나를 골라주세요!', 1, btn));
+            }
+            else if(msg == '군자관') { //군자관 버튼을 클릭한 경우
+                selectedCafeteria = msg;
+            }
+            else if(msg == '우정당') { //우정당 버튼을 클릭한 경우
+                selectedCafeteria = msg;
+            }
+            else if(msg == '기타') { //기타 버튼을 클릭한 경우
+                selectedCafeteria = msg;
+                var btn = ['직접입력', '', '', '', '']
+                res.json(sendData.sendMsg('기타 음식을 선택하셨습니다. 아래 메뉴 중 하나를 골라주세요!', 1, btn));
+            }
+        }
+        else if(selectedMenu == null) { //사용자가 입력한 메뉴 받기
+            if(msg == '다시검색') {
+                res.json(sendData.sendMsg('다시 검색합니다.', 0));
+                console.log('다시 검색합니다.');
+            }
+            else if(!DBMS.checkFood(msg, selectedCafeteria)) {
+                var str = DBMS.simlFood(msg, selectedCafeteria);
+                var btnarr = DBMS.simlFoodBtn();
+                if(str == '키워드가 없습니다...\n다른 걸로 검색해보세요~')
+                    res.json(sendData.sendMsg(str, 0));
+                else
+                    res.json(sendData.sendMsg(str, 1, btnarr));
+            }
+            else {
+                var result = DBMS.selectFood(msg, selectedCafeteria);
+                selectedMenu = result[0].menu;
+                selectedKcal = result[0].kcal;
+                selectedAmount = result[0].amount;
+                selectedUnit = result[0].unit;
+                res.json(sendData.sendMsg(selectedMenu+"은(는) "+selectedUnit+"에 "+selectedKcal+"kcal 입니다.\n얼마나 드셨는지 숫자로 알려주세요!", 0));
+            }
+        }
+        else if(inpAmount == 0.0) {
+            if(!AmountCheck(msg)) {
+                res.json(sendData.sendMsg('숫자만 입력이 가능합니다.', 0));
+            }
+            else {
+                res.json(sendData.sendMsg('데이터베이스에 등록됩니다!', 0));
+                console.log('데이터베이스에 등록이 완료됩니다.');
+                varsInit_food();
+            }
+        }
+    }
+    else if(userKey_Food != req.body.user_key && (msg.match('식사') == '식사' || msg.match('음식') == '음식')) {
+        res.json(sendData.sendMsg('다른 사용자가 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+    }
+    else {
+        res.json(sendData.sendMsg('기본 메시지', 0));
+    }
         /*
         res.json(sendData.sendMsg('알 수 없는 명령입니다..ㅜㅜ', 0));
 
@@ -328,7 +431,6 @@ app.post('/message', function(req, res) {
             'buttons':학관메뉴
         }
         //마찬가지로 군자관, 우정당, 기타음식에 대한 코드 작성*/
-    }
 });
 
 http.createServer(app).listen(3000, function() {

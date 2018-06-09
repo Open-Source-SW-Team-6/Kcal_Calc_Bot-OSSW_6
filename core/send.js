@@ -1,4 +1,4 @@
-exports.sendMsg = function(mMessage, type) {
+exports.sendMsg = function(mMessage, type, buttonsArr) {
     var Send = {};
 
     if (type == 0) {
@@ -10,5 +10,23 @@ exports.sendMsg = function(mMessage, type) {
                 "type": "text"
             }
         };
+    }
+    else if(type == 1) {
+        return Send = {
+            "message": {
+                "text": mMessage
+            },
+            "keyboard": {
+                "type": "buttons",
+                "buttons": buttonsArr
+            }
+        }
+    }
+    else if(type == 2) {
+        return Send = {
+            "keyboard": {
+                "type": "text"
+            }
+        }
     }
 }
