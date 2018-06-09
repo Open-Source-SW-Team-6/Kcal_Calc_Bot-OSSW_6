@@ -17,6 +17,7 @@ app.get('/keyboard', function(req, res) {
     res.json(data);
 });
 
+////사용자 등록 변수들
 var userKey = null;
 var isUserExist = false;
 var inUserReg = false;
@@ -29,14 +30,25 @@ var userGender = 0;
 var userHeight = 0.0;
 var userWeight = 0.0;
 
+////음식 등록 변수들
 var inFoodReg = false;
-var userKey_Food = false;
+var userKey_Food = null;
 var selectedCafeteria = null;
 var selectedMenu = null;
 var selectedKcal = 0.0;
 var selectedAmount = 0.0;
 var inpAmount = 0.0;
 var selectedUnit = null;
+
+////운동 등록 변수들
+var inExrReg = false;
+var userKey_Exr = null;
+
+function varsInit_Exc() { //운동 등록 변수 초기화
+    inExrReg = false;
+    userKey_Exr = null;
+}
+
 
 function varsInit_food() { //음식 등록 변수 초기화
     inFoodReg = false;
@@ -253,7 +265,7 @@ app.post('/message', function(req, res) {
     console.log('전달받은 메시지: '+msg);
     //isUserExist = DBMS.checkUser(req.body.user_key);
 
-    if(msg.match('등록') == '등록' && !inUserReg && !inFoodReg) {
+    if(msg.match('등록') == '등록' && !inUserReg && !inFoodReg && !inExrReg) {
         if(!DBMS.checkUser(req.body.user_key)) {
             res.json(sendData.sendMsg('먼저 본인의 신체정보를 "나이 성별(남: 1 또는 여: 2) 신장 체중" 띄어쓰기 구분하여 순서대로 입력해주세요.\n(예: 24 1 170 72)', 0));
             console.log('유저가 없습니다.');
@@ -326,7 +338,7 @@ app.post('/message', function(req, res) {
                 +'kg 이고, 일일권장칼로리는 '+userRecKcal+'kcal 입니다.', 0));
                 console.log('모든 등록이 완료되었고 여기에 등록 정보가 출력됩니다.');
                 //데이터베이스에 사용자 등록
-                //DBMS.addUserInfo(req.body.userKey, userName, userAge, userGender, userHeight, userWeight, userActiveIX, userSWeight, userRecKcal, userEODTIME, currentDate);
+                //DBMS.addUserInfo(req.body.userKey, userName, userAge, userGender, userHeight, userWeight, userActiveIX, userSWeight, userRecKcal, userEODTIME, "");
                 inUserReg = false; //사용자 등록을 마친걸로 플래그 설정
                 varsInit(); //다른 사용자가 등록할 수 있게 변수들 Release
             }
@@ -335,6 +347,8 @@ app.post('/message', function(req, res) {
     else if(userKey != req.body.user_key && msg.match('등록') == '등록') {
        res.json(sendData.sendMsg('다른 사용자가 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
     } 
+
+
     //여기에 사용자 등록을 제외한 기타 명령 입력
     else if((msg.match('식사') == '식사' || msg.match('음식') == '음식') && !inFoodReg) { //사용자가 먹은 음식을 등록하는 명령
         console.log('먹은 음식을 등록합니다.');
@@ -409,8 +423,23 @@ app.post('/message', function(req, res) {
         }
     }
     else if(userKey_Food != req.body.user_key && (msg.match('식사') == '식사' || msg.match('음식') == '음식')) {
-        res.json(sendData.sendMsg('다른 사용자가 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+        res.json(sendData.sendMsg('다른 사용자가 음식을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
     }
+
+
+    //운동 등록하기
+    else if(msg.match('운동') == '운동' && !inExrReg) { //사용자가 운동을 등록하면
+
+    }
+    else if(userKey_Exr == req.body.user_key && inExrReg) {
+
+    }
+    else if(userKey_Exr != req.body.user_key && msg.match('운동') == '운동') {
+        res.json(sendData.sendMsg('다른 사용자가 음식을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+    }
+
+
+
     else {
         res.json(sendData.sendMsg('기본 메시지', 0));
     }
