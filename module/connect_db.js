@@ -1,4 +1,3 @@
-var mysql = require('mysql');
 var syncMySQL = require('sync-mysql');
 
 var connData = {
@@ -9,40 +8,37 @@ var connData = {
     database: 'ossw_6_kcal'
 }
 
-var connection = mysql.createConnection(connData);
-var syncConnection = null;
+var synconn = null;
 
 exports.DBConnect = function() {
-    connection.connect();
-    syncConnection = new syncMySQL(connData);
+    synconn = new syncMySQL(connData);
     console.log('데이터베이스에 연결됨');
 }
 
 exports.DBdisConnect = function() {
-    connection.end();
-    syncConnection.end();
+    synconn.end();
     console.log('데이터베이스 해제됨');
 }
 
 exports.menuInsert = function (){
-	var hak_menu = ['', '', '', ''];
-	var hak_kcal = ['', '', '', ''];
-	var hak_amount = ['', '', '', ''];
-	var hak_unit = ['', '', '', ''];
+	var hak_menu = [];
+	var hak_kcal = [];
+	var hak_amount = [];
+	var hak_unit = [];
 	
-	var gunza_menu = ['', '', '', ''];
-	var gunza_kcal = ['', '', '', ''];
-	var gunza_amount = ['', '', '', ''];
-	var gunza_unit = ['', '', '', ''];
+	var gunza_menu = [];
+	var gunza_kcal = [];
+	var gunza_amount = [];
+	var gunza_unit = [];
 	
-	var woojeong_menu = ['', '', '', ''];
-	var woojeong_kcal = ['', '', '', ''];
-	var woojeong_amount = ['', '', '', ''];
-	var woojeong_unit = ['', '', '', ''];
+	var woojeong_menu = [];
+	var woojeong_kcal = [];
+	var woojeong_amount = [];
+	var woojeong_unit = [];
 
     var sql = "SELECT * FROM FOOD WHERE cafeteria = '학생회관';";
 	var i;
-    const result1 = syncConnection.query(sql);
+    const result1 = synconn.query(sql);
 	
 	for(i=0; i<result1.length; i++) {
 		hak_menu[i] = result1[i].menu;
@@ -52,7 +48,7 @@ exports.menuInsert = function (){
 	}
 	
 	sql = "SELECT * FROM FOOD WHERE cafeteria = '군자관';";
-    const result2 = syncConnection.query(sql);
+    const result2 = synconn.query(sql);
 	
 	for(i=0; i<result2.length; i++) {
 		gunza_menu[i] = result2[i].menu;
@@ -62,7 +58,7 @@ exports.menuInsert = function (){
 	}
 	
 	sql = "SELECT * FROM FOOD WHERE cafeteria = '우정당';";
-    const result3 = syncConnection.query(sql);
+    const result3 = synconn.query(sql);
 	
 	for(i=0; i<result3.length; i++) {
 		woojeong_menu[i] = result3[i].menu;
@@ -73,21 +69,21 @@ exports.menuInsert = function (){
 	
 	
 	for(i = 0; i< 5; i++) {
-		console.log(hak_menu[i],
+		console.log("학관 "+hak_menu[i],
 		hak_kcal[i],
 		hak_amount[i],
 		hak_unit[i]
 		);
 	}
 	for(i = 0; i< 5; i++) {
-		console.log(gunza_menu[i],
+		console.log("군자 "+gunza_menu[i],
 		gunza_kcal[i],
 		gunza_amount[i],
 		gunza_unit[i]
 		);
 	}
 	for(i = 0; i< 5; i++) {
-		console.log(woojeong_menu[i],
+		console.log("우정 "+woojeong_menu[i],
 		woojeong_kcal[i],
 		woojeong_amount[i],
 		woojeong_unit[i]

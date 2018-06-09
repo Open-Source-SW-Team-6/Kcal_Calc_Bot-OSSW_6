@@ -356,18 +356,22 @@ app.post('/message', function(req, res) {
             if(msg == '학생회관') { //학생회관 버튼을 클릭한 경우
                 //각 버튼에 대해 데이터베이스에서 결과값들을 변수에 저장하고 버튼에 할당
                 selectedCafeteria = msg;
-                var btn = ['직접입력', '소금구이덮밥', '오믈렛', '야채김밥', '카오팟무']
+                var btn = DBMS.selectWhereCaf(selectedCafeteria, 0);
                 res.json(sendData.sendMsg('학생회관을 선택하셨습니다. 아래 메뉴 중 하나를 골라주세요!', 1, btn));
             }
             else if(msg == '군자관') { //군자관 버튼을 클릭한 경우
                 selectedCafeteria = msg;
+                var btn = DBMS.selectWhereCaf(selectedCafeteria, 0);
+                res.json(sendData.sendMsg('군자관 선택하셨습니다. 아래 메뉴 중 하나를 골라주세요!', 1, btn));
             }
             else if(msg == '우정당') { //우정당 버튼을 클릭한 경우
                 selectedCafeteria = msg;
+                var btn = DBMS.selectWhereCaf(selectedCafeteria, 0);
+                res.json(sendData.sendMsg('우정당을 선택하셨습니다. 아래 메뉴 중 하나를 골라주세요!', 1, btn));
             }
             else if(msg == '기타') { //기타 버튼을 클릭한 경우
                 selectedCafeteria = msg;
-                var btn = ['직접입력', '', '', '', '']
+                var btn = DBMS.selectWhereCaf(selectedCafeteria, 0);
                 res.json(sendData.sendMsg('기타 음식을 선택하셨습니다. 아래 메뉴 중 하나를 골라주세요!', 1, btn));
             }
         }

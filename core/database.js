@@ -5,7 +5,7 @@ var connData = {
     host: 'stdbid.cjmpatqmujx2.us-east-2.rds.amazonaws.com',
     port: 3306,
     user: 'sjuackr18',
-    password: '',
+    password: 'sejonguniv2018',
     database: 'ossw_6_kcal'
 }
 
@@ -59,7 +59,8 @@ exports.simlFood = function (message, caf){
 
     for(var i = 0; i < result.length; i++) {
         strArr += '\n' + result[i].menu;
-        btnArr[i+1] = result[i].menu;
+        if(i < 98)
+            btnArr[i+1] = result[i].menu;
     }
     
     if(strArr == '다음 키워드가 존재합니다!\n')
@@ -80,6 +81,21 @@ exports.selectFood = function (message, caf){
     console.log(result);
     
     return result;
+}
+
+exports.selectWhereCaf = function(cafeteria) {
+    var sql = "SELECT * FROM FOOD WHERE cafeteria='"+cafeteria+"'";
+    var menuArr = [];
+    menuArr[0] = '직접입력';
+
+    const result = syncConnection.query(sql);
+    console.log(result);
+
+    for(var i=0; i < 98; i++) {
+        menuArr[i+1] = result[i].menu;
+    }
+
+    return menuArr;
 }
 
 //사용자 고유 키, 사용자 이름, 나이, 성별, 신장, 체중, 활동지수, 표준체중, 일일권장칼로리, 하루마무리시간, 등록날짜
