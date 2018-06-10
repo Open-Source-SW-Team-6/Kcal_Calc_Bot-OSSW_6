@@ -55,19 +55,19 @@ function getMyActivity(userKey, Tdate) {
 	var exptAcKcal = 0.0; //예상 누적 칼로리((총 드신 칼로리 - 소모한 칼로리)-일일칼로리)
 	var txtMsg = "";
 
-	wkList = syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0");
-	ckList = syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1");
+	wkList = syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0 AND userKey='"+userKey+"'");
+	ckList = syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1 AND userKey='"+userKey+"'");
 
 	//console.log(wkList);
 	//console.log(ckList);
 
-	wholeKcal = syncConnection.query("SELECT SUM(kcal) AS WK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0")[0].WK;
+	wholeKcal = syncConnection.query("SELECT SUM(kcal) AS WK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0 AND userKey='"+userKey+"'")[0].WK;
 	txtMsg += "총 드신 칼로리: "+wholeKcal+"kcal"
 	for(var i=0; i < wkList.length; i++) {
 		txtMsg += "\n  "+(i+1)+". "+wkList[i].actInfo;
 	}
 
-	consumKcal = syncConnection.query("SELECT SUM(kcal) AS CK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1")[0].CK;
+	consumKcal = syncConnection.query("SELECT SUM(kcal) AS CK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1 AND userKey='"+userKey+"'")[0].CK;
 	txtMsg += "\n\n소모한 칼로리: "+consumKcal+"kcal"
 	for(var i=0; i < ckList.length; i++) {
 		txtMsg += "\n  "+(i+1)+". "+ckList[i].actInfo;
