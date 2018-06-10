@@ -83,6 +83,15 @@ exports.selectFood = function (message, caf){
     return result;
 }
 
+exports.selectAct = function(message) {
+	var sql = "SELECT * FROM ACTIVITY WHERE act_type='"+message+"'";
+	
+	const result = syncConnection.query(sql);
+	console.log(result);
+	
+	return result;
+}
+
 exports.selectWhereCaf = function(cafeteria) {
     var sql = "SELECT * FROM FOOD WHERE cafeteria='"+cafeteria+"'";
     var menuArr = [];
@@ -90,12 +99,49 @@ exports.selectWhereCaf = function(cafeteria) {
 
     const result = syncConnection.query(sql);
     console.log(result);
-
-    for(var i=0; i < 98; i++) {
+	
+    for(var i=0; i < result.length; i++) {
+        if(i < 98)
         menuArr[i+1] = result[i].menu;
     }
-
+        
     return menuArr;
+}
+
+exports.selectActivity = function() {
+    var sql = "SELECT act_type FROM ACTIVITY"
+    var result = syncConnection.query(sql);
+
+    var arr = [];
+    arr[0] = '직접입력';
+
+    for(var i = 0; i < result.length; i++ ) {
+        arr[i+0] = result[i].act_type;
+    }
+
+    return arr;
+}
+
+//소모한 칼로리를 구하는 함수
+exports.checkActivity = function(act_type, minute, userKey) {
+	var sql = "SELECT kcal_per_min FROM ACTIVITY WHERE act_type = '"+act_type+"'";
+	
+	const result = syncConnection.query(sql);
+    console.log(result);
+    
+    usrWeight = syncConnection.query("SELECT weight FROM USER WHERE userKey='"+userKey+"'")[0].weight;
+	
+	return (minute * result[0].kcal_per_min * usrWeight);
+}
+
+exports.checkActListIn = function (message){
+
+    var sql = "SELECT COUNT(*) AS LST FROM ACTIVITY WHERE act_type='"+message+"'";
+
+    const result = syncConnection.query(sql);
+    console.log(result);
+    
+    return result[0].RES == 0 ? false : true;
 }
 
 //사용자 고유 키, 사용자 이름, 나이, 성별, 신장, 체중, 활동지수, 표준체중, 일일권장칼로리, 하루마무리시간, 등록날짜
