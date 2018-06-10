@@ -24,7 +24,8 @@ CREATE TABLE USER_ACTIVITY (
     recDate		date not null,
     type		int not null,
     kcal		double not null,
-    actInfo		char(48) not null
+    actInfo		char(48) not null,
+    accumKcal   double not null
 )
 DEFAULT CHARACTER SET utf8mb4;
 
