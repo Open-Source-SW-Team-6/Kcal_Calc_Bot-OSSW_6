@@ -4,11 +4,13 @@ var bodyParser = require('body-parser');
 var DBMS = require('./database');
 var sendData = require('./send');
 var getDate = require('./find-date');
-var coreLib = require('./module-core');
+var coreLib = require('./calc-kcal');
 var app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+
+var TimeZone = 9;
 
 ////사용자 등록 변수들
 var userKey = null;
@@ -285,7 +287,8 @@ app.post('/message', function(req, res) {
             console.log("사용자 등록 시작~");
             userKey = req.body.user_key;
         } else {
-            res.json(sendData.sendMsg('이미 있는 사용자 입니다. 변경할 수 있습니다.', 0));
+            var btn = ['식사', '운동', '나의활동', '사용자등록'];
+            res.json(sendData.sendMsg('이미 있는 사용자 입니다!', 1, btn));
             console.log('유저가 존재합니다.');
         }
     }
@@ -345,9 +348,10 @@ app.post('/message', function(req, res) {
                 var userRecKcal = coreLib.dayKcal(userAge, userGender, userHeight, userWeight, userActiveIX);
                 console.log('닉네임 입력 완료!: '+userName);
                 //여기서 표준체중 및 일일권장칼로리 계산해서 전역변수에 저장
+                var btn = ['식사', '운동', '나의활동', '사용자등록'];
                 res.json(sendData.sendMsg((userName==''?'':userName+'님의 ') 
                 + '정보가 등록되었습니다! 표준 체중은 '+userSWeight.toFixed(2)
-                +'kg 이고, 일일권장칼로리는 '+userRecKcal.toFixed(2)+'kcal 입니다.', 0));
+                +'kg 이고, 일일권장칼로리는 '+userRecKcal.toFixed(2)+'kcal 입니다.', 1, btn));
                 console.log('모든 등록이 완료되었고 여기에 등록 정보가 출력됩니다.');
                 //데이터베이스에 사용자 등록
                 console.log("user: " + req.body.user_key);
@@ -358,7 +362,8 @@ app.post('/message', function(req, res) {
         } 
     }
     else if(userKey != req.body.user_key && msg.match('등록') == '등록') {
-       res.json(sendData.sendMsg('다른 사용자가 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+        var btn = ['식사', '운동', '나의활동', '사용자등록'];
+        res.json(sendData.sendMsg('다른 사용자가 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 1, btn));
     } 
 
 
@@ -372,7 +377,8 @@ app.post('/message', function(req, res) {
     }
     else if(userKey_Food == req.body.user_key && inFoodReg) { //다른 사용자 막기
         if(msg.match('취소') == '취소') { //사용자가 취소한 경우
-            res.json(sendData.sendMsg('음식 등록을 취소했습니다.', 0));
+            var btn = ['식사', '운동', '나의활동', '사용자등록'];
+            res.json(sendData.sendMsg('음식 등록을 취소했습니다.', 1, btn));
             console.log('사용자가 음식 등록을 취소함.');
             varsInit_food(); //변수 초기화
         }
@@ -436,15 +442,17 @@ app.post('/message', function(req, res) {
                 console.log(((tmp*msg+0.0)*selectedKcal+0.0) + " wholekcal");
                 console.log(selectedMenu + " menu");
 
-                res.json(sendData.sendMsg(selectedMenu+'이(가) 먹은 음식에 등록되었습니다: '+((tmp*msg+0.0)*selectedKcal+0.0)+'kcal', 0));
-                DBMS.addUserActivity(req.body.user_key, getDate.currentDate(), 0, ((tmp*msg+0.0)*selectedKcal+0.0), selectedMenu);
+                var btn = ['식사', '운동', '나의활동', '사용자등록'];
+                res.json(sendData.sendMsg(selectedMenu+'이(가) 먹은 음식에 등록되었습니다: '+((tmp*msg+0.0)*selectedKcal+0.0)+'kcal', 1, btn));
+                DBMS.addUserActivity(req.body.user_key, getDate.checkTime(DBMS.getUserEODTIME(req.body.user_key), TimeZone), 0, ((tmp*msg+0.0)*selectedKcal+0.0), selectedMenu);
                 console.log('데이터베이스에 등록이 완료됩니다.');
                 varsInit_food();
             }
         }
     }
     else if(userKey_Food != req.body.user_key && (msg.match('식사') == '식사' || msg.match('음식') == '음식')) {
-        res.json(sendData.sendMsg('다른 사용자가 음식을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+        var btn = ['식사', '운동', '나의활동', '사용자등록'];
+        res.json(sendData.sendMsg('다른 사용자가 음식을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 1, btn));
     }
 
 
@@ -457,8 +465,9 @@ app.post('/message', function(req, res) {
 		res.json(sendData.sendMsg('무슨 운동을 하셨나요?', 1, btn));
     }
     else if(userKey_Exr == req.body.user_key && inExrReg) {
-		if(msg.match('취소') == '취소') { //사용자가 취소한 경우
-            res.json(sendData.sendMsg('운동 등록을 취소했습니다.', 0));
+        if(msg.match('취소') == '취소') { //사용자가 취소한 경우
+            var btn = ['식사', '운동', '나의활동', '사용자등록'];
+            res.json(sendData.sendMsg('운동 등록을 취소했습니다.', 1, btn));
             console.log('사용자가 운동 등록을 취소함.');
             varsInit_Exc(); //변수 초기화
         }
@@ -482,8 +491,9 @@ app.post('/message', function(req, res) {
             }
             else {
                 var spendKcal = DBMS.checkActivity(selectedExr, minute_Exr, req.body.user_key);
-				res.json(sendData.sendMsg(spendKcal.toFixed(2)+'kcal만큼 소모하셨어요! 보람찬 운동이였기를 바랍니다~ \n결과는 데이터베이스에 등록되었어요!',0));
-                DBMS.addUserActivity(req.body.user_key, getDate.currentDate(), 1, spendKcal, selectedExr);
+                var btn = ['식사', '운동', '나의활동', '사용자등록'];
+				res.json(sendData.sendMsg(spendKcal.toFixed(2)+'kcal만큼 소모하셨어요! 보람찬 운동이였기를 바랍니다~ \n결과는 데이터베이스에 등록되었어요!', 1, btn));
+                DBMS.addUserActivity(req.body.user_key, getDate.checkTime(DBMS.getUserEODTIME(req.body.user_key), TimeZone), 1, spendKcal, selectedExr);
                 varsInit_Exc();
             }
 		}
@@ -491,15 +501,14 @@ app.post('/message', function(req, res) {
     else if(userKey_Exr != req.body.user_key && msg.match('운동') == '운동') {
         res.json(sendData.sendMsg('다른 사용자가 운동을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
     }
-    else if(msg.match('나의활동') == '나의활동') {
+    else if(msg.match('오늘') == '오늘' || (msg.match('나의') == '나의' && msg.match('활동') == '활동')) {
         console.log('활동 내용이 표시됩니다~~~~');
-        res.json(sendData.sendMsg(DBMS.getMyActivity(req.body.user_key, getDate.currentDate()), 0));
+        var btn = ['식사', '운동', '나의활동', '사용자등록'];
+        res.json(sendData.sendMsg(DBMS.getMyActivity(req.body.user_key, getDate.checkTime(DBMS.getUserEODTIME(req.body.user_key), TimeZone)), 1, btn));
     }
-
-
-
     else {
-        res.json(sendData.sendMsg('기본 메시지', 0));
+        var btn = ['식사', '운동', '나의활동', '사용자등록'];
+        res.json(sendData.sendMsg('알 수 없는 명령입니다.\n다음 항목 중에서 선택해 주세요!', 1 ,btn));
     }
 });
 

@@ -1,5 +1,3 @@
-var dbMain = require('./database');
-
 function stWeight(height, gender){ //표준 체중 구하는 함수
 	return (height/100)*(height/100) * (gender==1 ? 22 : 21);
 }

@@ -114,9 +114,10 @@ exports.selectActivity = function() {
 
     var arr = [];
     arr[0] = '직접입력';
+    arr[1] = '취소';
 
     for(var i = 0; i < result.length; i++ ) {
-        arr[i+0] = result[i].act_type;
+        arr[i+2] = result[i].act_type;
     }
 
     return arr;
@@ -259,17 +260,7 @@ exports.getMyActivity = function(userKey, Tdate) {
 		txtMsg += "\n\n\n앞으로 다음과 같은 운동을 하셔야 살이 찌지 않습니다!";
 		txtMsg += checkExr(exrList, exptAcKcal);
 	}
-	
-	/*예상 누적 칼로리가 음수이면 : txtMsg에 "더 드셔도 됩니다~",
-				양수이고 100 미만까지 : txtMsg에 "그만 드세요!", ---일일 권장 칼로리의 99칼로리까지는 초과 허용 가능
-					 그 이상 넘어간 경우 : txtMsg에 "앞으로 다음과 같은 운동을 하셔야 합니다."
-					 --> 예) 1. 걷기 %분
-								  2. 수영 %분 .....
-					**<분 = 운동(분당소모량)/예상누적칼로리>
-					
 
-			*** 해야 할 운동 목록은 우선 전부 띄우는 것만 하고 여유 되면 전체 운동 목록 중에서 랜덤하게 5개 정도만 나오게 할 수 있으면 해줘~
-	*/
 	return txtMsg;
 }
 
@@ -283,4 +274,10 @@ function checkExr(exrList, exptAcKcal) {
 		txtMsg += "\n " + (i+1) + ". " + exrList[random].act_type + " " + (exptAcKcal / exrList[random].kcal_per_min) + "분";
 	}
 	return txtMsg;
+}
+
+exports.getUserEODTIME = function(userKey) {
+    var tmp = syncConnection.query("SELECT day_of_endtime FROM USER WHERE userKey='"+userKey+"'");
+
+    return tmp[0].day_of_endtime;
 }

@@ -8,13 +8,15 @@
 1-31, 2-28, 3-31, 4-30, 5-31, 6-30, 7-31, 8-31, 9-30,  10 -31, 11-30, 12-31
 */
 
-exports.checkTime = function() {
+exports.checkTime = function(end_of_time, UTC) {
 	var dt = new Date();
 	var currentYear;
 	var currentMonth;
 	var currentDay;
-	var end_of_time = 10;
-	
+
+	var tz = dt.getTime() + (dt.getTimezoneOffset() * 60000) + (UTC * 3600000);
+	dt.setTime(tz);
+
 	if(dt.getHours() >= end_of_time) {
 		console.log('오늘 하루의 마무리 시간이 다 되었네요.');
 		dt.setDate(dt.getDate() + 1);
@@ -22,7 +24,12 @@ exports.checkTime = function() {
 		currentMonth = (dt.getMonth() + 1);
 		currentDay = dt.getDate();
 	}
-	
+	else {
+		currentYear = dt.getFullYear();
+		currentMonth = (dt.getMonth() + 1);
+		currentDay = dt.getDate();
+	}
+
 	if(currentMonth < 10) {
 		currentMonth = "0" + currentMonth;
 	}
