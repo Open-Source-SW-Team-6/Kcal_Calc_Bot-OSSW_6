@@ -43,10 +43,15 @@ var selectedUnit = null;
 ////운동 등록 변수들
 var inExrReg = false;
 var userKey_Exr = null;
+var selectedExr = null;
+var minute_Exr = 0;
 
 function varsInit_Exc() { //운동 등록 변수 초기화
     inExrReg = false;
     userKey_Exr = null;
+	selectedExr = null;
+	minute_Exr = 0;
+	console.log('재사용할 수 있도록 운동 등록 변수가 초기화 되었습니다.');
 }
 
 
@@ -219,6 +224,19 @@ function AmountCheck(message) { //하루 종료 시간 입력상태 체크
     }
     else {
         inpAmount = tmp;
+        return true;
+    }
+    return false;
+}
+
+function minuteCheck(message) { //하루 종료 시간 입력상태 체크
+    var tmp = parseInt(message);
+    if(tmp+'' == 'NaN') {
+        console.log('잘못된 양 값을 입력했습니다.');
+        return false;
+    }
+    else {
+        minute_Exr = tmp;
         return true;
     }
     return false;
@@ -429,13 +447,45 @@ app.post('/message', function(req, res) {
 
     //운동 등록하기
     else if(msg.match('운동') == '운동' && !inExrReg) { //사용자가 운동을 등록하면
-
+		console.log('수행한 운동을 등록합니다.');
+		inExrReg = true;	//운동 등록중인 플래그
+		userKey_Exr = req.body.user_key;
+		var btn = DBMS.selectActivity();
+		res.json(sendData.sendMsg('무슨 운동을 하셨나요?', 1, btn));
     }
     else if(userKey_Exr == req.body.user_key && inExrReg) {
-
+		if(msg.match('취소') == '취소') { //사용자가 취소한 경우
+            res.json(sendData.sendMsg('운동 등록을 취소했습니다.', 0));
+            console.log('사용자가 운동 등록을 취소함.');
+            varsInit_Exc(); //변수 초기화
+        }
+		else if(msg == '직접입력') {
+			res.json(sendData.sendMsg('직접 입력해주세요~', 0));
+		}
+		else if(selectedExr == null) { //운동을 선택하기 전인 경우
+			if(!DBMS.checkActListIn(msg)) { //운동이 목록에 없다면 실패 메시지 띄어주고 롤백
+				var btn = DBMS.selectActivity();
+		        res.json(sendData.sendMsg('해당 운동이 목록에 없습니다. 다음에서 하나 골라보세요!', 1, btn));
+            }
+            else { //목록에 있다면 운동을 선택한 걸로 간주(선택한 메시지 저장) 얼마나 했는지 물어봄.
+                selectedExr = msg;
+				console.log('몇 분 했는지 입력중');
+				res.json(sendData.sendMsg(msg+'를(을) 하셨군요!!\n얼마나 하셨는지 분 단위로 입력해주세요~', 0));
+            }				
+		}
+		else if(selectedExr != null) { //운동을 선택한 후라면
+            if(!minuteCheck(msg)) { //메시지로 들어온 값이 숫자 인지 판별
+				res.json(sendData.sendMsg('숫자만 입력이 가능합니다.', 0));
+            }
+            else {
+                var spendKcal = DBMS.checkActivity(selectedExr, minute_Exr, "test"/*req.body.user_key*/);
+				res.json(sendData.sendMsg(spendKcal.toFixed(2)+'kcal만큼 소모하셨어요! 보람찬 운동이였기를 바랍니다~ \n결과는 데이터베이스에 등록되었어요!',0));
+				varsInit_Exc();
+            }
+		}
     }
     else if(userKey_Exr != req.body.user_key && msg.match('운동') == '운동') {
-        res.json(sendData.sendMsg('다른 사용자가 음식을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+        res.json(sendData.sendMsg('다른 사용자가 운동을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
     }
 
 
@@ -443,27 +493,6 @@ app.post('/message', function(req, res) {
     else {
         res.json(sendData.sendMsg('기본 메시지', 0));
     }
-        /*
-        res.json(sendData.sendMsg('알 수 없는 명령입니다..ㅜㅜ', 0));
-
-        //반복문을 이용해 데이터베이스에서 모든 음식 가져와서 배열에 저장
-        var 학생회관_menu = ['', '', '', ''];
-        var 학생회관_kcal = ['', '', '', ''];
-        var 학생회관_amount = ['', '', '', ''];
-        var 학생회관_unit = ['', '', '', ''];
-
-        var 군자관_menu = ['', '', '', ''];
-        var 군자관_kcal = ['', '', '', ''];
-        var 군자관_amount = ['', '', '', ''];
-        var 군자관_unit = ['', '', '', ''];
-
-
-        var 학관메뉴 = ['', '', '', ''];
-        var Send = {
-            'type':'buttons',
-            'buttons':학관메뉴
-        }
-        //마찬가지로 군자관, 우정당, 기타음식에 대한 코드 작성*/
 });
 
 http.createServer(app).listen(3000, function() {
