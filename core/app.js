@@ -3,7 +3,8 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var DBMS = require('./database');
 var sendData = require('./send');
-var getCurrentDate = require('./find-date');
+var getDate = require('./find-date');
+var coreLib = require('./module-core');
 var app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
@@ -347,16 +348,17 @@ app.post('/message', function(req, res) {
                 console.log('잘못된 닉네임 입력');
             }
             else {
-                var userSWeight = 50;
-                var userRecKcal = 2000;
+                var userSWeight = coreLib.stWeight(userHeight, userGender);
+                var userRecKcal = coreLib.dayKcal(userAge, userGender, userHeight, userWeight, userActiveIX);
                 console.log('닉네임 입력 완료!: '+userName);
                 //여기서 표준체중 및 일일권장칼로리 계산해서 전역변수에 저장
                 res.json(sendData.sendMsg((userName==''?'':userName+'님의 ') 
-                + '정보가 등록되었습니다! 표준 체중은 '+userSWeight
-                +'kg 이고, 일일권장칼로리는 '+userRecKcal+'kcal 입니다.', 0));
+                + '정보가 등록되었습니다! 표준 체중은 '+userSWeight.toFixed(2)
+                +'kg 이고, 일일권장칼로리는 '+userRecKcal.toFixed(2)+'kcal 입니다.', 0));
                 console.log('모든 등록이 완료되었고 여기에 등록 정보가 출력됩니다.');
                 //데이터베이스에 사용자 등록
-                //DBMS.addUserInfo(req.body.userKey, userName, userAge, userGender, userHeight, userWeight, userActiveIX, userSWeight, userRecKcal, userEODTIME, "");
+                console.log("user: " + req.body.user_key);
+                DBMS.addUserInfo(req.body.user_key, userName, userAge, userGender, userHeight, userWeight, userActiveIX, userSWeight, userRecKcal, userEODTIME, getDate.currentDate());
                 inUserReg = false; //사용자 등록을 마친걸로 플래그 설정
                 varsInit(); //다른 사용자가 등록할 수 있게 변수들 Release
             }
@@ -478,7 +480,7 @@ app.post('/message', function(req, res) {
 				res.json(sendData.sendMsg('숫자만 입력이 가능합니다.', 0));
             }
             else {
-                var spendKcal = DBMS.checkActivity(selectedExr, minute_Exr, "test"/*req.body.user_key*/);
+                var spendKcal = DBMS.checkActivity(selectedExr, minute_Exr, req.body.user_key);
 				res.json(sendData.sendMsg(spendKcal.toFixed(2)+'kcal만큼 소모하셨어요! 보람찬 운동이였기를 바랍니다~ \n결과는 데이터베이스에 등록되었어요!',0));
 				varsInit_Exc();
             }
@@ -498,5 +500,5 @@ app.post('/message', function(req, res) {
 http.createServer(app).listen(3000, function() {
     console.log('서버가 실행 중입니다.');
     DBMS.DBConnect();
-    console.log(getCurrentDate.myDateTime());
+    console.log(getDate.currentDate());
 });

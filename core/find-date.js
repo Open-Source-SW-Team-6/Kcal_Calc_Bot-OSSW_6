@@ -1,5 +1,19 @@
-exports.myDateTime = function() {
-	return Date();
+exports.currentDate = function() {
+	var today = new Date();
 
-	console.log('myDateTime.start');
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+
+	if(dd<10) {
+		dd='0'+dd
+	} 
+
+	if(mm<10) {
+		mm='0'+mm
+	} 
+
+	today = yyyy+'-'+mm+'-'+dd;
+
+	return today;
 }

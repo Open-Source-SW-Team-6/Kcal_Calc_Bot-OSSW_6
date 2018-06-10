@@ -145,10 +145,10 @@ exports.checkActListIn = function (message){
 }
 
 //사용자 고유 키, 사용자 이름, 나이, 성별, 신장, 체중, 활동지수, 표준체중, 일일권장칼로리, 하루마무리시간, 등록날짜
-exports.addUserInfo = function(uKey, uName, uAge, uGen, uHeight, uWeight, uActix, sWeight, recKcal, doEndTime, regDate) {
+exports.addUserInfo = function(uKey, uName, uAge, uGen, uHeight, uWeight, uActix, uSWeight, recKcal, doEndTime, uRegDate) {
     var userNm = uName;
     if(uName == '.')
-        userNm = null;
+        userNm = '';
     var sql = "INSERT INTO USER SET ?";
     var post = {
         userKey: uKey,
@@ -158,9 +158,10 @@ exports.addUserInfo = function(uKey, uName, uAge, uGen, uHeight, uWeight, uActix
         height: uHeight,
         weight: uWeight,
         activity: uActix,
-        avg_weight: sWeight,
+        sWeight: uSWeight,
         recomandation_kcal: recKcal,
-        day_of_endtime: doEndTime
+        day_of_endtime: doEndTime,
+        regDate: uRegDate
     };
 
     function callback(err, result) {
