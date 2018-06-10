@@ -5,7 +5,7 @@ var connData = {
     host: 'stdbid.cjmpatqmujx2.us-east-2.rds.amazonaws.com',
     port: 3306,
     user: 'sjuackr18',
-    password: 'sejonguniv2018',
+    password: '',
     database: 'ossw_6_kcal'
 }
 
