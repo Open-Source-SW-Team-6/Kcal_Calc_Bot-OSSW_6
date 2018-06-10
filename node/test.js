@@ -1,9 +1,10 @@
+var express = require('express');
 var http = require('http');
+var calc = require('./avgkal')
+var app = express();
 
-http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-calculator = require('./avgkal')
-
-console.log(calculator.avg_kg(175,40))
-console.log(calculator.day_kal(65,40))
-}).listen(3000,'127.0.0.1');
+http.createServer(app).listen(3000, function() {
+    console.log('예제 코드...');
+    console.log(calc.stWeight(168.7, 1) + "");
+    console.log(calc.dayKcal(24, 1, 168.7, 59.7, 1.11)+"kcal")
+});
