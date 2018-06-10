@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var http = require('http');
 var bodyParser = require('body-parser');
 var DBMS = require('./database');
@@ -471,82 +471,7 @@ app.post('/message', function(req, res) {
 				console.log('몇 분 했는지 입력중');
 				res.json(sendData.sendMsg('걷기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
-			else if(msg == '계단오르내리기') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('계단오르내리기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '달리기') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('달리기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '등산') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('등산을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '런닝머신') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('런닝머신을 타셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '복싱') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('복싱을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '사이클') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('사이클을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '수영') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('수영을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '스쿼시') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('스쿼시을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '스쿼트') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('스쿼트 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '에어로빅') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('에어로빅을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '요가') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('요가를 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '윗몸일으키기') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('윗몸일으키기를 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '자전거타기') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('자전거타기를 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '줄넘기') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('줄넘기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			else if(msg == '훌라후프') {
-				selectedExr = msg;
-				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('훌라후프 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
-			}
-			
+						
 		}
 		else if(trigger == false) {
 			var result = DBMS.selectAct(selectedExr);
