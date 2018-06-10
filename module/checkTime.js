@@ -10,65 +10,32 @@
 
 exports.checkTime = function() {
 	var dt = new Date();
-	var currentYear = dt.getFullYear();
-	var currentMonth = (dt.getMonth()+1);
-	var currentDay = dt.getDate();
+	var currentYear;
+	var currentMonth;
+	var currentDay;
 	var end_of_time = 10;
+	
+	if(dt.getHours() >= end_of_time) {
+		console.log('오늘 하루의 마무리 시간이 다 되었네요.');
+		dt.setDate(dt.getDate() + 1);
+		currentYear = dt.getFullYear();
+		currentMonth = (dt.getMonth() + 1);
+		currentDay = dt.getDate();
+	}
 	
 	if(currentMonth < 10) {
 		currentMonth = "0" + currentMonth;
 	}
 	
-	var currentDate = currentYear + "-" + currentMonth + "-" + currentDay;
-	
-	console.log("오늘 날짜 : " + currentDate);
-	
-	if(dt.getHours() >= end_of_time) {
-		console.log('오늘 하루의 마무리 시간이 다 되었네요.');
-		
-		//한달에 31일인 월들
-		if( (currentMonth == 1 || currentMonth == 3 || currentMonth == 5 || currentMonth == 7 ||
-		currentMonth == 8 || currentMonth == 10 || currentMonth == 12) && currentDay == 31) {
-			//한달에 31일이 끝인 월의 31일째 되는 날이였을때, 월을 증가시키고 1일로 교체
-			currentDay = 1;
-			
-			//12월이였으면, 년도 1 증가시키고 월을 1월로 교체, 아니면 그냥 월만 증가
-			if(currentMonth == 12) {
-				currentYear++;
-				currentMonth = 1;
-			} else {
-				currentMonth++;
-			}
-		}
-		else if( (currentMonth == 4 || currentMonth == 6 || currentMonth == 9 ||
-		currentMonth == 11) && currentDay == 30) {
-			//한달에 30일이 끝인 월의 30일째 되는 날이였을때, 월을 증가시키고 1일로 교체
-			currentDay = 1;
-			currentMonth++;
-		}
-		else if( currentMonth == 2 && currentDay == 28 ) {
-			//2월 28일이였는데, 그 해가 윤년일때 29일로 만듦, 아니면 월 바꾸고 1일로 교체
-			if( ((currentYear % 4) == 0 && (currentYear % 100) != 0) || ((currentYear % 400) == 0)) {
-				currentDay++;
-			}
-			else {
-				currentDay = 1;
-				currentMonth++;
-			}
-		}
-		else if( currentMonth == 2 && currentDay == 29) {
-			//2월 29일이였을때, 월 바꾸고 1일로 교체
-			currentDay = 1;
-			currentMonth++;
-		}
-		else {
-			currentDay++;
-		}
-		
-		currentDate = currentYear + "-" + currentMonth + "-" + (currentDay);
+	if(currentDay < 10) {
+		currentDay = "0" + currentDay;
 	}
 	
+	currentDate = currentYear + "-" + currentMonth + "-" + currentDay;
+	
 	console.log("이제부터 기록될 날짜 : " +currentDate);
+	
+	return currentDate;
 }
 
 
