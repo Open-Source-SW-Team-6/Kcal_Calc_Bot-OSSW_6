@@ -10,14 +10,6 @@ var app = express();
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-app.get('/keyboard', function(req, res) {
-    var data = {
-        'type': 'text'
-    };
-    console.log(res.user_key);
-    res.json(data);
-});
-
 ////사용자 등록 변수들
 var userKey = null;
 var isUserExist = false;
@@ -224,6 +216,7 @@ function AmountCheck(message) { //하루 종료 시간 입력상태 체크
         return false;
     }
     else {
+        console.log(inpAmount+" 먹은 양 입니다.");
         inpAmount = tmp;
         return true;
     }
@@ -274,7 +267,7 @@ function UserNameCheck(message) { //닉네임 입력상태 체크
 app.get('/keyboard', function(req, res) {
     var data = {
         'type': 'buttons',
-        'buttons': ['식사', '운동', '사용자등록']
+        'buttons': ['식사', '운동', '나의활동', '사용자등록']
     };
     res.json(data);
 });
@@ -436,7 +429,15 @@ app.post('/message', function(req, res) {
                 res.json(sendData.sendMsg('숫자만 입력이 가능합니다.', 0));
             }
             else {
-                res.json(sendData.sendMsg('데이터베이스에 등록됩니다!', 0));
+                var tmp = 1 / selectedAmount;
+                console.log(selectedKcal + " selectedkcal");
+                console.log(req.body.user_key + " userkey");
+                console.log(getDate.currentDate() + " curdate");
+                console.log(((tmp*msg+0.0)*selectedKcal+0.0) + " wholekcal");
+                console.log(selectedMenu + " menu");
+
+                res.json(sendData.sendMsg(selectedMenu+'이(가) 먹은 음식에 등록되었습니다: '+((tmp*msg+0.0)*selectedKcal+0.0)+'kcal', 0));
+                DBMS.addUserActivity(req.body.user_key, getDate.currentDate(), 0, ((tmp*msg+0.0)*selectedKcal+0.0), selectedMenu);
                 console.log('데이터베이스에 등록이 완료됩니다.');
                 varsInit_food();
             }
@@ -482,12 +483,17 @@ app.post('/message', function(req, res) {
             else {
                 var spendKcal = DBMS.checkActivity(selectedExr, minute_Exr, req.body.user_key);
 				res.json(sendData.sendMsg(spendKcal.toFixed(2)+'kcal만큼 소모하셨어요! 보람찬 운동이였기를 바랍니다~ \n결과는 데이터베이스에 등록되었어요!',0));
-				varsInit_Exc();
+                DBMS.addUserActivity(req.body.user_key, getDate.currentDate(), 1, spendKcal, selectedExr);
+                varsInit_Exc();
             }
 		}
     }
     else if(userKey_Exr != req.body.user_key && msg.match('운동') == '운동') {
         res.json(sendData.sendMsg('다른 사용자가 운동을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
+    }
+    else if(msg.match('나의활동') == '나의활동') {
+        console.log('활동 내용이 표시됩니다~~~~');
+        res.json(sendData.sendMsg(DBMS.getMyActivity(req.body.user_key, getDate.currentDate()), 0));
     }
 
 
