@@ -44,13 +44,16 @@ var selectedUnit = null;
 var inExrReg = false;
 var userKey_Exr = null;
 var selectedExr = null;
-var minute_Exr = null;
+var minute_Exr = 0;
+var trigger = false;
 
 function varsInit_Exc() { //운동 등록 변수 초기화
     inExrReg = false;
     userKey_Exr = null;
 	selectedExr = null;
-	minute_Exr = null;
+	minute_Exr = 0;
+	trigger = false;
+	console.log('재사용할 수 있도록 운동 등록 변수가 초기화 되었습니다.');
 }
 
 
@@ -223,6 +226,19 @@ function AmountCheck(message) { //하루 종료 시간 입력상태 체크
     }
     else {
         inpAmount = tmp;
+        return true;
+    }
+    return false;
+}
+
+function minuteCheck(message) { //하루 종료 시간 입력상태 체크
+    var tmp = parseInt(message);
+    if(tmp+'' == 'NaN') {
+        console.log('잘못된 양 값을 입력했습니다.');
+        return false;
+    }
+    else {
+        minute_Exr = tmp;
         return true;
     }
     return false;
@@ -436,8 +452,8 @@ app.post('/message', function(req, res) {
 		console.log('수행한 운동을 등록합니다.');
 		inExrReg = true;	//운동 등록중인 플래그
 		userKey_Exr = req.body.user_key;
-		var btn = ['걷기', '계단오르내리기', '달리기', '등산', '런닝머신', '복싱', '사이클', '수영', '스쿼시', '스쿼트', '에어로빅', '요가', '윗몸일으키기', '자전거타기', '줄넘기', '훌라후프', '취소']
-		res.json(sendData.sendMsg('무슨 운동을 했나요?', 1, btn));
+		var btn = ['직접입력','걷기', '계단오르내리기', '달리기', '등산', '런닝머신', '복싱', '사이클', '수영', '스쿼시', '스쿼트', '에어로빅', '요가', '윗몸일으키기', '자전거타기', '줄넘기', '훌라후프', '취소']
+		res.json(sendData.sendMsg('무슨 운동을 했는지 선택해주세요.', 1, btn));
     }
     else if(userKey_Exr == req.body.user_key && inExrReg) {
 		if(msg.match('취소') == '취소') { //사용자가 취소한 경우
@@ -449,91 +465,107 @@ app.post('/message', function(req, res) {
 			res.json(sendData.sendMsg('직접 입력해주세요~', 0));
 		}
 		else if(selectedExr == null) {
+			
 			if(msg == '걷기') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('걷기 운동을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('걷기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '계단오르내리기') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('계단오르내리기 운동을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('계단오르내리기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '달리기') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('달리기 운동을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('달리기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '등산') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('등산을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('등산을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '런닝머신') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('런닝머신을 타셨군요!! 몇 분동안 타셨나요??', 0));
+				res.json(sendData.sendMsg('런닝머신을 타셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '복싱') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('복싱을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('복싱을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '사이클') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('사이클을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('사이클을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '수영') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('수영을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('수영을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '스쿼시') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('스쿼시을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('스쿼시을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '스쿼트') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('스쿼트 운동을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('스쿼트 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '에어로빅') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('에어로빅을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('에어로빅을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '요가') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('요가를 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('요가를 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '윗몸일으키기') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('윗몸일으키기를 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('윗몸일으키기를 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '자전거타기') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('자전거타기를 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('자전거타기를 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '줄넘기') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('줄넘기 운동을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('줄넘기 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			else if(msg == '훌라후프') {
 				selectedExr = msg;
 				console.log('몇 분 했는지 입력중');
-				res.json(sendData.sendMsg('훌라후프 운동을 하셨군요!! 몇 분동안 하셨나요??', 0));
+				res.json(sendData.sendMsg('훌라후프 운동을 하셨군요!!\n계속 진행하시려면 아무거나 입력해서 보내주세요~!', 0));
 			}
 			
-			
 		}
-		
-		
+		else if(trigger == false) {
+			var result = DBMS.selectAct(selectedExr);
+			var selected_act = result[0].act_type;
+			var spend_Kcal_per_min = result[0].kcal_per_min;
+			res.json(sendData.sendMsg(selected_act+"은(는) 1분에 "+spend_Kcal_per_min+"kcal만큼 소모합니다.\n몇 분동안 하셨는지 숫자로 알려주세요!",0)); 
+			trigger = true;
+		}
+		else if(minute_Exr == 0 && trigger == true) {
+			if(!minuteCheck(msg)) {
+				res.json(sendData.sendMsg('숫자만 입력이 가능합니다.', 0));
+			}
+			else {
+				minute_Exr = msg;
+				var spendKcal = DBMS.checkActivity(selectedExr, minute_Exr);
+				res.json(sendData.sendMsg(spendKcal+'kcal만큼 소모하셨어요! 보람찬 운동이였기를 바랍니다~ \n결과는 데이터베이스에 등록되었어요!',0));
+				varsInit_Exc();
+			}
+		}
     }
     else if(userKey_Exr != req.body.user_key && msg.match('운동') == '운동') {
         res.json(sendData.sendMsg('다른 사용자가 운동을 등록 중입니다...잠시만 기다려주세요. ㅜㅜ', 0));
