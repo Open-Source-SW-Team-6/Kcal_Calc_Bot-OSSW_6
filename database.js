@@ -5,7 +5,7 @@ var connData = {
     host: 'stdbid.cjmpatqmujx2.us-east-2.rds.amazonaws.com',
     port: 3306,
     user: 'sjuackr18',
-    password: '',
+    password: 'sejonguniv2018',
     database: 'ossw_6_kcal'
 }
 
@@ -83,6 +83,15 @@ exports.selectFood = function (message, caf){
     return result;
 }
 
+exports.selectAct = function(message) {
+	var sql = "SELECT * FROM ACTIVITY WHERE act_type='"+message+"'";
+	
+	const result = syncConnection.query(sql);
+	console.log(result);
+	
+	return result;
+}
+
 exports.selectWhereCaf = function(cafeteria) {
     var sql = "SELECT * FROM FOOD WHERE cafeteria='"+cafeteria+"'";
     var menuArr = [];
@@ -101,6 +110,15 @@ exports.selectWhereCaf = function(cafeteria) {
 		}
 	}
     return menuArr;
+}
+//소모한 칼로리를 구하는 함수
+exports.checkActivity = function(act_type, minute) {
+	var sql = "SELECT kcal_per_min FROM ACTIVITY WHERE act_type = '"+act_type+"'";
+	
+	const result = syncConnection.query(sql);
+	console.log(result);
+	
+	return (minute * result[0].kcal_per_min);
 }
 
 //사용자 고유 키, 사용자 이름, 나이, 성별, 신장, 체중, 활동지수, 표준체중, 일일권장칼로리, 하루마무리시간, 등록날짜
