@@ -1,24 +1,4 @@
-var syncMySQL = require('sync-mysql');
-
-var connData = {
-    host: 'stdbid.cjmpatqmujx2.us-east-2.rds.amazonaws.com',
-    port: 3306,
-    user: 'sjuackr18',
-    password: 'sejonguniv2018',
-    database: 'ossw_6_kcal'
-}
-
-var syncConnection = null;
-
-function DBConnect() {
-    syncConnection = new syncMySQL(connData);
-    console.log('데이터베이스에 연결됨');
-}
-
-function DBdisConnect() {
-    syncConnection.end();
-    console.log('데이터베이스 해제됨');
-}
+var syncMySQL = require('./database');
 
 function stWeight(height, gender){ //표준 체중 구하는 함수
 	return (height/100)*(height/100) * (gender==1 ? 22 : 21);
@@ -57,25 +37,25 @@ function getMyActivity(userKey, Tdate) {
 	var exrList = null;
 	var exrMinuteKcal = 0.0;
 	
-	wkList = syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0 AND userKey='"+userKey+"'");
-	ckList = syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1 AND userKey='"+userKey+"'");
+	wkList = syncMySQL.syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0 AND userKey='"+userKey+"'");
+	ckList = syncMySQL.syncConnection.query("SELECT actInfo FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1 AND userKey='"+userKey+"'");
 
 	//console.log(wkList);
 	//console.log(ckList);
 
-	wholeKcal = syncConnection.query("SELECT SUM(kcal) AS WK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0 AND userKey='"+userKey+"'")[0].WK;
+	wholeKcal = syncMySQL.syncConnection.query("SELECT SUM(kcal) AS WK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=0 AND userKey='"+userKey+"'")[0].WK;
 	txtMsg += "총 드신 칼로리: "+wholeKcal+"kcal"
 	for(var i=0; i < wkList.length; i++) {
 		txtMsg += "\n  "+(i+1)+". "+wkList[i].actInfo;
 	}
 
-	consumKcal = syncConnection.query("SELECT SUM(kcal) AS CK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1 AND userKey='"+userKey+"'")[0].CK;
+	consumKcal = syncMySQL.syncConnection.query("SELECT SUM(kcal) AS CK FROM USER_ACTIVITY WHERE recDate='"+Tdate+"' AND type=1 AND userKey='"+userKey+"'")[0].CK;
 	txtMsg += "\n\n소모한 칼로리: "+consumKcal+"kcal"
 	for(var i=0; i < ckList.length; i++) {
 		txtMsg += "\n  "+(i+1)+". "+ckList[i].actInfo;
 	}
 
-	exptAcKcal = (wholeKcal - consumKcal) - syncConnection.query("SELECT recomandation_kcal FROM USER WHERE userKey='"+userKey+"'")[0].recomandation_kcal;
+	exptAcKcal = (wholeKcal - consumKcal) - syncMySQL.syncConnection.query("SELECT recomandation_kcal FROM USER WHERE userKey='"+userKey+"'")[0].recomandation_kcal;
 	txtMsg += "\n\n예상 누적 칼로리: "+exptAcKcal+"kcal";
 	
 	if(exptAcKcal < 0) {
@@ -103,7 +83,7 @@ function getMyActivity(userKey, Tdate) {
 }
 
 function checkExr(exrList, exptAcKcal) {
-	exrList = syncConnection.query("SELECT * FROM ACTIVITY");
+	exrList = syncMySQL.syncConnection.query("SELECT * FROM ACTIVITY");
 	var i;
 	var txtMsg = "";
 	var random = 0;
@@ -117,8 +97,6 @@ function checkExr(exrList, exptAcKcal) {
 module.exports = {
 	'stWeight':stWeight,
 	'dayKcal':dayKcal,
-	'DBConnect':DBConnect,
-	'DBdisConnect':DBdisConnect,
 	'getMyActivity':getMyActivity
 }
 
